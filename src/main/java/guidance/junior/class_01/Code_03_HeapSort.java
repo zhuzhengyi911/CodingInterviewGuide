@@ -1,0 +1,181 @@
+package guidance.junior.class_01;
+
+
+import java.util.Arrays;
+
+/**
+ * 堆排序
+ * <p>
+ * 大根堆 -> 升序
+ * 小根堆 -> 降序
+ * <p>
+ * 堆不需要二叉树，应该用数组存储
+ * (i - 1) / 2 : parentNode
+ * i * 2 + 1 : leftChild
+ * i * 2 + 2 : rightChild
+ * <p>
+ * heapInsert 插入数据
+ * heapify 交换位置后调整堆
+ */
+public class Code_03_HeapSort {
+
+    public static void heapSort(int[] arr) {
+        if (arr == null || arr.length < 2) {
+            return;
+        }
+
+        for (int i = 0; i < arr.length; i++) {
+            heapInsert(arr, i);
+        }
+
+        int size = arr.length;
+        while (size > 0){
+            swap(arr,0,size - 1);
+            size--;
+            heapify(arr,0,size);
+        }
+    }
+
+
+    public static void heapInsert(int[] arr, int index) {
+        while (arr[index] > arr[(index - 1) / 2]) {
+            swap(arr, index, (index - 1)/2);
+            index = (index - 1) / 2;
+        }
+    }
+
+    public static void heapify(int[] arr, int index, int size) {
+        int left = index * 2 + 1;
+        while (left < size) {
+            int largest = left + 1 < size && arr[left + 1] > arr[left] ? left + 1 : left;
+            largest = arr[largest] > arr[index] ? largest : index;
+            if (largest == index) {
+                break;
+            }
+            swap(arr, largest, index);
+            index = largest;
+            left = index * 2 + 1;
+        }
+    }
+
+    public static void swap(int[] arr, int i, int j) {
+        int temp;
+        temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+
+        /**
+         * 位运算版本
+         * arr[i] = arr[i] ^ arr[j];
+         * arr[j] = arr[i] ^ arr[j];
+         * arr[i] = arr[i] ^ arr[j];
+         */
+    }
+
+
+    /**
+     * 生成随机数组
+     *
+     * @param maxSize
+     * @param maxValue
+     * @return
+     */
+    public static int[] generateRandomArray(int maxSize, int maxValue) {
+        int[] arr = new int[(int) (Math.random() * (maxSize - 1))];
+
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = (int) (Math.random() * maxValue);
+        }
+        return arr;
+    }
+
+
+    /**
+     * 绝对正确的参照组方法
+     *
+     * @param arr
+     */
+    public static void comparator(int[] arr) {
+        Arrays.sort(arr);
+    }
+
+    /**
+     * 复制数组
+     *
+     * @param arr
+     * @return
+     */
+    public static int[] copyArray(int[] arr) {
+        if (arr == null) {
+            return arr;
+        }
+
+        int[] res = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            res[i] = arr[i];
+        }
+        return res;
+    }
+
+
+    /**
+     * 判断数组是否相同
+     *
+     * @param arr1
+     * @param arr2
+     * @return
+     */
+    public static boolean isEqual(int[] arr1, int[] arr2) {
+        if ((arr1 == null && arr2 != null) || (arr1 != null && arr2 == null)) {
+            return false;
+        }
+        if (arr1 == null && arr2 == null) {
+            return true;
+        }
+        if (arr1.length != arr2.length) {
+            return false;
+        }
+
+        for (int i = 0; i < arr1.length; i++) {
+            if (arr1[i] != arr2[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public static void print(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            System.out.print(arr[i] + " ");
+        }
+        System.out.println();
+    }
+
+
+    public static void main(String[] args) {
+        int testTime = 500000;
+        int maxSize = 100;
+        int maxValue = 100;
+        boolean succeed = true;
+        for (int i = 0; i < testTime; i++) {
+            int[] original = generateRandomArray(maxSize, maxValue);
+            int[] arr1 = copyArray(original);
+            int[] arr2 = copyArray(original);
+            heapSort(arr1);
+            comparator(arr2);
+            if (!isEqual(arr1, arr2)) {
+                succeed = false;
+
+                print(original);
+                print(arr1);
+                print(arr2);
+
+                break;
+            }
+        }
+        System.out.println(succeed ? "pass!" : "failed!");
+
+
+    }
+}
